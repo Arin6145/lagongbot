@@ -20,7 +20,7 @@ class Shop(Cog):
         "CREATE TABLE IF NOT EXISTS shop(guild_id INTEGER, role_id INTEGER, item_name TEXT, description TEXT, price INTEGER, item_number INTEGER, msg TEXT)"
         )
 
-    @group(invoke_without_command=True, case_insensitive=True)
+    @group(invoke_without_command=True, case_insensitive=True, name="상점")
     async def shop(self, ctx):
         datas = await func.DataFetch(self.bot, 'all', 'shop', ctx.guild.id)
         if len(datas) == 0:
@@ -60,7 +60,7 @@ class Shop(Cog):
             await ctx.send(embed=embeds[0])
 
     async def ShopAdd(self, ctx, item, price, description, role, command):
-        if not ctx.author.guild_permissions.administrator:
+        if not ctx.author.id == 743349630468620303:
             return await ctx.send(embed=func.ErrorEmbed('Error', 'You are not allowed to use this command.'))
         if command == 'prefix':
             await ctx.send("Now input a description for the item.")
@@ -90,7 +90,7 @@ class Shop(Cog):
         await func.DataUpdate(self.bot, f"INSERT INTO shop(guild_id, role_id, item_name, description, price, item_number, msg) VALUES(?,?,?,?,?,?,?)", ctx.guild.id, role, item, description, price, len(datas)+1, msg)
         await ctx.send(embed=func.SuccessEmbed('Item Added!', f'{item} was added in the shop successfully.'))
 
-    @shop.command()
+    @shop.command(name="추가")
     async def add(self, ctx, price: int, *, item):
         await self.ShopAdd(ctx, item, price, "", 123, 'prefix')
 
@@ -99,7 +99,7 @@ class Shop(Cog):
         if isinstance(error, (BadArgument, MissingRequiredArgument)):
             await ctx.send(embed=func.ErrorEmbed('Syntax Error', f'Correct syntax is: `.shop add <price> <item-name>`. Example: `.shop add 20 Sneaker Role`.'))
 
-    @shop.command()
+    @shop.command(name="삭제")
     async def remove(self, ctx):
         if not ctx.author.guild_permissions.administrator:
             return await ctx.send(embed=func.ErrorEmbed('Error', 'You are not allowed to use this command.'))
@@ -152,7 +152,7 @@ class Shop(Cog):
             await log_channel.send(embed=e)
 
 
-    @shop.command()
+    @shop.command(name="구매")
     async def buy(self, ctx, *, item):
         try:
             item = int(item)
