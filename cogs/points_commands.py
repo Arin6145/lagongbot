@@ -9,7 +9,7 @@ class PointsCommands(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 
-    @commands.group(invoke_without_command=True, case_insensitive=True)
+    @commands.group(invoke_without_command=True, case_insensitive=True, name="포인트")
     async def points(self,ctx,member:Member = None):
         member = member or ctx.author
         data = await func.DataFetch(self.bot, 'one', 'points', ctx.guild.id, member.id)
@@ -25,7 +25,7 @@ class PointsCommands(commands.Cog):
         await ctx.send(embed=e)
 
     async def edit(self, ctx, member, number):
-        if not ctx.author.guild_permissions.administrator:
+        if not ctx.author.id == 743349630468620303:
             return await ctx.send(embed=func.ErrorEmbed('Error', 'You are not allowed to use this command.'))
         data = await func.DataFetch(self.bot, 'one', 'points', ctx.guild.id, member.id)
         EditedPoints = data[2]+number
@@ -41,7 +41,7 @@ class PointsCommands(commands.Cog):
             method = 'decreased'
         await ctx.send(embed=func.SuccessEmbed(f'{PointsName} Edited!', f"{member.name}'s :coin: {PointsName} was {method} by `{number}`."))
 
-    @points.command()
+    @points.command(name="삭제")
     async def remove(self, ctx, member:Member, number:int):
         if number <= 0:
             return await ctx.send(embed=func.ErrorEmbed('Error', 'Number needs to be greater than 0.'))
@@ -52,7 +52,7 @@ class PointsCommands(commands.Cog):
         if isinstance(error, (commands.BadArgument, commands.MissingRequiredArgument)):
             await ctx.send(embed=func.ErrorEmbed('Error', 'Correct syntax is: `.points remove <member> <number>`. Use slash command for more simplicity.'))
 
-    @points.command()
+    @points.command(name="추가")
     async def add(self, ctx, member: Member, number: int):
         if number <= 0:
             return await ctx.send(embed=func.ErrorEmbed('Error', 'Number needs to be greater than 0.'))
@@ -63,7 +63,7 @@ class PointsCommands(commands.Cog):
         if isinstance(error, (commands.BadArgument, commands.MissingRequiredArgument)):
             await ctx.send(embed=func.ErrorEmbed('Error', 'Correct syntax is: `.points add <member> <number>`. Use slash command for more simplicity.'))
 
-    @commands.command(aliases=['lb'])
+    @commands.command(aliases=['lb','리더보드'])
     async def leaderboard(self,ctx):
         datas = await func.DataFetch(self.bot, 'all', 'points', ctx.guild.id)
         datas = sorted(datas, key=lambda x: x[2], reverse=True)
